@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>选衣录核心算法 - 使用示例</title>
+<style>
+  body { font-family: -apple-system, "PingFang SC", sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; color: #333; }
+  h1 { color: #c2410c; }
+  h2 { color: #9a3412; margin-top: 30px; }
+  pre { background: #f5f5f4; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 14px; }
+  .result { margin-top: 20px; }
+  .outfit-card { border: 1px solid #e7e5e4; border-radius: 12px; padding: 16px; margin: 12px 0; background: #fafaf9; }
+  .outfit-title { font-weight: 600; color: #c2410c; margin-bottom: 8px; }
+  .outfit-score { font-size: 14px; color: #78716c; }
+  .color-dot { display: inline-block; width: 16px; height: 16px; border-radius: 50%; margin-right: 6px; vertical-align: middle; border: 1px solid #d6d3d1; }
+</style>
+</head>
+<body>
+
+<h1>🎯 选衣录核心算法库 - 使用示例</h1>
+<p>引用 <code>xuanyilu-core.js</code> 后，通过 <code>XuanYiLuCore</code> 对象调用全部算法功能。</p>
+
+<h2>📦 引入方式</h2>
+<pre>&lt;script src="xuanyilu-core.js"&gt;&lt;/script&gt;</pre>
+
+<h2>🎨 颜色提取示例</h2>
+<pre>// 从 canvas 提取颜色（自动排除背景和阴影）
+var colors = XuanYiLuCore.extractColors(canvasImageData);
+// 返回: { main: '#HEX', secondary: '#HEX', accent: '#HEX', palette: [...] }</pre>
+
+<h2>👗 生成搭配示例</h2>
+<pre>// 设置用户信息
+XuanYiLuCore.setGender('female');
+XuanYiLuCore.setAge('worker');
+XuanYiLuCore.setOccasion('date');
+XuanYiLuCore.setSeason('spring');
+
+// 传入衣服列表，生成 6 套搭配
+var results = XuanYiLuCore.generateCombinations(items, 6);</pre>
+
+<h2>🔬 色彩工具</h2>
+<pre>// RGB 转 HSL
+var hsl = XuanYiLuCore.rgbToHsl(255, 100, 100);
+
+// 计算色相距离（环式，0-180°）
+var dist = XuanYiLuCore.hueDistance(0, 30);
+
+// 判断是否中性色（黑白灰米）
+var isGray = XuanYiLuCore.isNeutral('#888888');</pre>
+
+<h2>🤖 大模型接口</h2>
+<pre>// 检查大模型是否配置好
+if (XuanYiLuCore.isAIOutfitReady()) {
+  // 构建上下文
+  var ctx = XuanYiLuCore.buildAIContext(items);
+  // 调用大模型生成搭配
+  XuanYiLuCore.callAIOutfit(items, 6).then(function(result) {
+    console.log(result);
+  });
+}</pre>
+
+<h2>✨ 实时演示</h2>
+<div id="demo"></div>
+
+<script src="./xuanyilu-core.js"></script>
+<script>
+// 模拟几件衣服
+var testItems = [
+  { id: 's1', name: '白色T恤', category: 'T恤', colors: { main: '#FFFFFF', secondary: null, accent: null }, pattern: '纯色', length: '短款', fit: '修身' },
+  { id: 's2', name: '蓝色牛仔裤', category: '牛仔裤', colors: { main: '#6B8FA5', secondary: '#4A6B82', accent: null }, pattern: '纯色', length: '长裤', fit: '修身' },
+  { id: 's3', name: '米色风衣', category: '风衣', colors: { main: '#C8B896', secondary: '#A89876', accent: null }, pattern: '纯色', length: '长款', fit: '宽松' },
+  { id: 's4', name: '黑色高跟鞋', category: '高跟鞋', colors: { main: '#1A1A1A', secondary: null, accent: null }, pattern: '纯色' },
+  { id: 's5', name: '红色连衣裙', category: '连衣裙', colors: { main: '#DC2626', secondary: '#991B1B', accent: '#FCA5A5' }, pattern: '纯色', length: '中长款', fit: '修身' }
+];
+
+// 设置场景
+XuanYiLuCore.setGender('female');
+XuanYiLuCore.setOccasion('date');
+XuanYiLuCore.setSeason('spring');
+
+// 生成搭配
+var results = XuanYiLuCore.generateCombinations(testItems, 4);
+
+var html = '<p>测试场景：女生 / 约会 / 春季</p>';
+results.forEach(function(outfit, i) {
+  html += '<div class="outfit-card">';
+  html += '<div class="outfit-title">方案 ' + (i+1) + '：' + outfit.name + '</div>';
+  html += '<div class="outfit-score">综合评分：' + Math.round(outfit.score) + ' 分</div>';
+  html += '<div style="margin-top: 8px;">';
+  outfit.items.forEach(function(item) {
+    var mainColor = item.colors && item.colors.main ? item.colors.main : '#ccc';
+    html += '<span class="color-dot" style="background:' + mainColor + '"></span>' + item.name + '  ';
+  });
+  html += '</div>';
+  if (outfit.desc) {
+    html += '<div style="margin-top: 8px; font-size: 14px; color: #57534e;">' + outfit.desc + '</div>';
+  }
+  html += '</div>';
+});
+
+document.getElementById('demo').innerHTML = html;
+</script>
+
+</body>
+</html>
